@@ -1,0 +1,72 @@
+# ----------------------------------------------------
+# DEPLOYMENT
+# ----------------------------------------------------
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: patient-api
+spec:
+  replicas: 1 
+  selector:
+    matchLabels:
+      app: patient-app
+  template:
+    metadata:
+      labels:
+        app: patient-app
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8000"
+        prometheus.io/path: "/metrics"
+    spec:
+      containers:
+      - name: fastapi-container
+        image: tanishhh13/patient-management-system-api
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 8000
+        resources:
+          requests:
+            cpu: "100m"
+          limits:
+            cpu: "200m"
+
+---
+# ----------------------------------------------------
+# SERVICE
+# ----------------------------------------------------
+apiVersion: v1
+kind: Service
+metadata:
+  name: patient-api-service
+spec:
+  selector:
+    app: patient-app
+  ports:
+    - protocol: TCP
+      port: 5000       
+      targetPort: 8000 
+  type: ClusterIP
+
+---
+# ----------------------------------------------------
+# HPA
+# ----------------------------------------------------
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: patient-api-scaler
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: patient-api 
+  minReplicas: 1      
+  maxReplicas: 5      
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 50

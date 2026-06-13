@@ -1,0 +1,49 @@
+# Python
+
+**pycache**/
+*.py[cod]
+*.pyo
+*.pyd
+*.db
+*.sqlite3
+
+# Virtual env
+
+venv/
+.venv/
+env/
+
+# Environment
+
+.env
+
+# VS Code
+
+.vscode/
+
+# Logs
+
+*.log
+
+# Windows
+
+Thumbs.db
+
+# Executables / binaries
+
+*.exe
+*.msi
+loki*
+prometheus*
+promtool*
+
+# Grafana extracted files
+
+grafana-*/
+
+# Prometheus/Grafana runtime data
+
+data/
+wal/
+chunks/
+*.tmp
