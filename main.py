@@ -88,6 +88,23 @@ def view():
 
     return data
 
+@app.get('/patient/search')
+def search_patients_by_name(name: str = Query(..., description='Name or partial name to search for')):
+    data = load_data()
+    
+    matching_patients = {}
+    
+    for patient_id, patient_info in data.items():
+        
+        if name.lower() in patient_info.get('name', '').lower():
+            matching_patients[patient_id] = patient_info
+            
+    # Return a 404 error if no one matches the search
+    if not matching_patients:
+        raise HTTPException(status_code=404, detail="No patients found matching that search")
+        
+    return matching_patients
+
 @app.get('/patient/{patient_id}')
 def view_patient(patient_id: str = Path(..., description='ID of the patient in the DB', example='P001')):
     # load all the patients
